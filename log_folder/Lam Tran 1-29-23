@@ -1,0 +1,10 @@
+1/29
+Previous week, I worked on the Raspberry Pi to intergate color and size sensor code.
+I managed to take an image with a Raspberry Pi Camera using the Thonny Python.
+I went to office hours to talk about noise from images, noise from the weight sensor, and the amount bins that the robotic sorting system should have.
+I bought a ring light to so there is even lighting for the image.
+I took some images with the ring light
+It seem to do a good enought job to bring even lighting, so that it prevent unwanted noise to the image.
+I tried to import the sensors code from githud to the Thonny Python, but it created errors.
+I might have to type the color and size sensor code, instead of copying the raw contents from github.
+My personal plan is to test the weight sensor with a capacitor to see if noise reduce, and to finish typing the color/sensor code to the Raspberry Pi.
