@@ -133,6 +133,14 @@ crop_mask = mask[top:bottom, left:right]
 cv2.rectangle(img,(left,top),(right, bottom),(10,255,10),3)
 cv2.imshow("square_img", img)
 
+########### implendmet colors percentage 
+num_red = 0
+num_orange = 0
+num_yellow = 0
+num_green = 0
+num_blue = 0
+num_violet = 0
+
 collect_hue = np.array([])
 i = 0
 j = 0
@@ -143,6 +151,22 @@ while i < (bottom - top):
             pixel = crop_hsv_frame[i,j]
             hue_value = pixel[0]
             collect_hue = np.append(collect_hue, hue_value)
+            ### update 2/5
+            if hue_value < 5:
+                num_red = num_red + 1
+            elif hue_value < 22:
+                num_orange = num_orange + 1
+            elif hue_value < 33:
+                num_yellow = num_yellow + 1
+            elif hue_value < 78:
+                num_green = num_green + 1
+            elif hue_value < 131:
+                num_blue = num_blue + 1
+            elif hue_value < 167:
+                num_violet = num_violet + 1
+            else:
+                num_red = num_red + 1
+            ### 2/5
         j = j + 1
     i = i + 1
 obj_pixel = collect_hue.size
@@ -170,6 +194,18 @@ elif col_median < 167:
 else:
     color = "RED"
 print("Object hue is ",color)
+
+##### 2/5
+###########calculating the hue composion of the object
+totalpix = num_red + num_orange + num_yellow + num_green + num_blue + num_violet
+print("total pixel of the obj is ", totalpix)
+print("red percent: " ,100*num_red/totalpix)
+print("orange percent: " ,100*num_orange/totalpix)
+print("yellow percent: " ,100*num_yellow/totalpix)
+print("green percent: " ,100*num_green/totalpix)
+print("blue percent: " ,100*num_blue/totalpix)
+print("violet percent: " ,100*num_violet/totalpix)
+##### 2/5
 
 height = (bottom - top)/pix_p_inch
 print("height in inches: ", height)
