@@ -198,13 +198,21 @@ print("Object hue is ",color)
 ##### 2/5
 ###########calculating the hue composion of the object
 totalpix = num_red + num_orange + num_yellow + num_green + num_blue + num_violet
+
+red_percent=100*num_red/totalpix
+orange_percent=100*num_orange/totalpix
+yellow_percent=100*num_yellow/totalpix
+green_percent=100*num_green/totalpix
+blue_percent=100*num_blue/totalpix
+violet_percent=100*num_violet/totalpix
+
 print("total pixel of the obj is ", totalpix)
-print("red percent: " ,100*num_red/totalpix)
-print("orange percent: " ,100*num_orange/totalpix)
-print("yellow percent: " ,100*num_yellow/totalpix)
-print("green percent: " ,100*num_green/totalpix)
-print("blue percent: " ,100*num_blue/totalpix)
-print("violet percent: " ,100*num_violet/totalpix)
+print("red percent: " ,red_percent)
+print("orange percent: " ,orange_percent)
+print("yellow percent: " ,yellow_percent)
+print("green percent: " ,green_percent)
+print("blue percent: " ,blue_percent)
+print("violet percent: " ,violet_percent)
 ##### 2/5
 
 height = (bottom - top)/pix_p_inch
