@@ -6,14 +6,17 @@ import json
 num_sec = 5
 #this program will determine the height, width, and color of the fruit
 #this program will update the JSON file periodically
-address = "Chap2\subsystem_connection.json"
+address = "/home/lifeofpi/BLEProject/subsystem_connection.json"
+
 with open(address, "r") as f:      # read the json file   ##note, you have to change this address when working with the raspi
   variables = json.load(f)
 
 error_message = "check for noise(dust, uneven lighting), the position of the fruit are not on the edge of the frame, there is only one fruit current within the frame"
 
 while(True):
-    image_bgr = cv2.imread('background1crop.PNG')
+    image_bgr = cv2.imread('intg_test.jpg')
+    #image_bgr = cv2.imread('/home/lifeofpi/ECEN_403/Cropped_real_lemon.jpg')
+    #image_bgr = cv2.imread('/home/lifeofpi/ECEN_403/Cropped_lemon.jpg')
     gray_squ = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
     gray_squ = cv2.fastNlMeansDenoising(gray_squ,None,10,7,21)
     kernel = np.ones((5,5),np.uint8)
@@ -31,8 +34,18 @@ while(True):
     closing = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     #result1 = cv2.bitwise_and(image_bgr, image_bgr, mask=closing)
     thresh1 = cv2.bitwise_and(thresh1, thresh1, mask=closing)
+    #cv2.imshow("is there an item", thresh1)
 
-    
+    ##### fix this bug, where there is no fruit on the screen, there will be an error
+    contours,hierarchy = cv2.findContours(thresh1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)   
+    num_obj = len(contours)                          ###<------determines the number of fruits on the frame
+    print("the nummber of object in the frame is ", num_obj)
+    if num_obj != 0:
+        obj_present = True
+    else:
+        obj_present = False
+        
+#####
 
     
     r = len(thresh1)
@@ -108,7 +121,66 @@ while(True):
 
     i = 0
     j = 0
+    
+    ##a quick and dirty way to fix this but
+    if obj_present:
+        print("run the while loop")
+        while i < (bottom - top):
+            j = 0
+            while j < (right - left):
+                if crop_mask[i,j] == 255:
+                    pixel = crop_hsv_frame[i, j]     ##you may able to simplify this
+                    hue_value = pixel[0]
+                    collect_hue = np.append(collect_hue, hue_value)
+                j = j + 1
+            i = i + 1
+        col_median = np.median(collect_hue)
+        color = "undefine"
+        if col_median < 5:
+            color = "RED"
+            clr_num = 1
+        elif col_median < 22:
+            color = "ORANGE"
+            clr_num = 2
+        elif col_median < 33:
+            color = "YELLOW"
+            clr_num = 3
+        elif col_median < 78:
+            color = "GREEN"
+            clr_num = 4
+        elif col_median < 131:
+            color = "BLUE"
+            clr_num = 5
+        elif col_median < 167:
+            color = "VIOLET"
+            clr_num = 6
+        else:
+            color = "RED"
+            clr_num = 1
 
+        print(color)
+        pix_p_inch = 74.39758060582346                     ######note: change this after calibrating again
+            #find the size of the object
+        height_p = (bottom - top)
+        #print("height by pixels: ", height_p)
+        width_p = (right - left)
+       #print("width by pixels: ", width_p)
+        height = (bottom - top)/pix_p_inch
+        print("height by inch: ", height)
+        width = (right - left)/pix_p_inch
+        print("width by inch: ", width)
+        sensor_error = False    ##mostly false, may change because of the position of the object
+        
+    else:
+        print("don't run the while loop")
+        height = 0
+        width = 0
+        height_p = 0
+        width_p = 0
+        col_median = 0
+        sensor_error = True
+######before
+        """
     while i < (bottom - top):
         j = 0
         while j < (right - left):
@@ -157,13 +229,15 @@ while(True):
     print("height by inch: ", height)
     width = (right - left)/pix_p_inch
     print("width by inch: ", width)
-
+"""
     ###################################error message implemention
-    sensor_error = False
-    contours,hierarchy = cv2.findContours(thresh1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)   
-    num_obj = len(contours)                          ###<------determines the number of fruits on the frame
+
+    #contours,hierarchy = cv2.findContours(thresh1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)   
+    #num_obj = len(contours)                          ###<------determines the number of fruits on the frame
     print("number of stuff on the belt is:", num_obj)
-    if top < 1 or bottom < 1 or left < 1 or right < 1:
+    if sensor_error == True:
+        print("ok, there is no object on the frame")
+    elif top < 1 or bottom < 1 or left < 1 or right < 1:
         sensor_error = True
         print("the sensor error is", sensor_error)
         print(error_message)
